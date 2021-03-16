@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build TF.IO (Debug)",
+            "type": "shell",
+            "command": "bazel build -s --verbose_failures --compilation_mode dbg //tensorflow_io/...",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
