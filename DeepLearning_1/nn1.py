@@ -1,6 +1,11 @@
 #a neural network from scratch
 import numpy as np
 import math
+import nnfs
+from nnfs.datasets import spiral_data
+
+#this only initializes the seed in numpy s that all data outputs remain consistent. Also we will use this to import datasets
+nnfs.init()
 
 #region
 #EXPLANATIONS
@@ -49,20 +54,40 @@ import math
 #- A ReLU function however can fit a non linear function
 
 #Why does this non linear activation function actually work?
-#- 
+#- bias of a neuron can change the activation/deactivation point of a ReLU activation function
+#- the sign of the weight can determine of its an activation or deactivation function
+#- Different neurons will have different weights and biases assigned to them and each piece will activate and deactivate along the function. 
 
+#Softmax Activation Function
+#To train a model, we need to determine how wrong a model is and how far away a result is from the required value. 
+#if we were to use ReLU to give us the answer of the probability of a class, we would only get 0 or 1(whether the input is -10,-9000 or 1000)
+#Hence we need to apply the exponent on each output from the final hidden layer at each output neuron
+#Then each value will be divided by the sum of the exponents and then we have the probability for each value
+#For each input you will have outputs equal to number of the classes which needs to be applied with the exponent normalization
+#An issue with the exponential function is that as the input grows, it results in explosion. Also it can result in memory overflow
+#One way to combat this explosion is to take the values which are the output of the output layer and substract the maximum value from the values. 
+#Substracting the largest value results the largest value being a zero and the rest being negative. 
+#Now all your outputs are going to be between 0 and 1. So we dont have to worry about overflow
+#Finally the actual normalized output will be identically the same and we have prevented a memory overflow
+#For random initializations, your output probabilities will be 1/no.ofclasses
 
+#Calculating the Loss Entropy
+#By using only accuracy to calculate the loss, we are throwing away a lot of information
+#Showing how wrong or correct we are is important to the optimizer
+#MAE(mean absolute error)
+#The loss function of choice is categorical cross entropy
+#This is more popular for back propagation steps. 
+#By log we mean natural log
+#Given that we multiply the entire prediction matrix with the one hot encoded matrix, it is essentialy summ of -log(prediction for respective correct class)
+#When the probability from softmax is higher, the loss is lower
+#When the probability from softmax is lower, the loss is higher
 
 #endregion
 
-
-np.random.seed(0) 
+""" np.random.seed(0) 
 X = [[1,2,3,2.5],
     [2.0,5.0,-1.0,2.0],
-    [-1.5,2.7,3.3,-0.8]]
-
-
-#making a class for the Dense Layer
+    [-1.5,2.7,3.3,-0.8]] """
 
 class Layer_Dense:
     def __init__(self,n_inputs,n_neurons):
@@ -72,20 +97,61 @@ class Layer_Dense:
     def forward(self,inputs):
         self.output = np.dot(inputs,self.weights) + self.biases
 
+class Activation_ReLU:
+    def forward(self,inputs):
+        self.output = np.maximum(0,inputs)
+
+class Activation_Softmax:
+    def forward(self,inputs):
+        self.exp_values = np.exp(inputs - np.max(inputs,axis = 1, keepdims=True))
+        self.output = self.exp_values/np.sum(self.exp_values,axis = 1, keepdims=True)
+
+#first layer of neurons
+#layer1 = Layer_Dense(n_inputs = 2, n_neurons = 5)
+#takes the output of the layer and produce the activation for the entire layer
+
 """ def dotprod(layer_weights,layer_biases,layer_inputs):
     input_weight =  [[(input_1,weight) for weight in layer_weights] for input_1 in layer_inputs]
 
     output_layer = list(map(lambda o: list(map(lambda p: sum(p),o)),list(map(lambda q: tuple(zip(*(layer_biases,q))),list(map(lambda r: list(map(lambda s: sum(s),r)),list(map(lambda t: list(map(lambda u: list(map(lambda v: math.prod(v),u)),t)),list(map(lambda w: list(map(lambda x: tuple(zip(*(x[0],x[1]))),w)),input_weight)))))))))) 
-    return output_layer 
+    return output_layer  """
 
-layer2_outputs = dotprod(weights_layer2,biases_layer2,dotprod(weights_layer1,biases_layer1,inputs))
- """
+""" layer2_outputs = dotprod(weights_layer2,biases_layer2,dotprod(weights_layer1,biases_layer1,inputs)) """
 
-layer1 = Layer_Dense(n_inputs = 4,n_neurons = 5)
+
+""" layer1 = Layer_Dense(n_inputs = 4,n_neurons = 5)
 #output from layer1 is input to layer2
 layer2 = Layer_Dense(n_inputs = 5,n_neurons = 2)
 
 layer1.forward(X)
 #print(layer1.output)
 layer2.forward(layer1.output)
-print(layer2.output)
+print(layer2.output) """
+
+#100 data points with 3 different classes 
+X,y = spiral_data(samples = 100,classes = 3)
+
+dense1 = Layer_Dense(n_inputs = X.shape[1],n_neurons = 3)
+activation1 = Activation_ReLU()
+
+dense2 = Layer_Dense(n_inputs = 3, n_neurons = 3)
+activation2 = Activation_Softmax()
+
+dense1.forward(X)
+activation1.forward(dense1.output)
+
+dense2.forward(activation1.output)
+activation2.forward(dense2.output)
+
+#print(activation2.output)
+
+softmax_output = [0.7,0.1,0.2]
+
+target_class = 0
+
+one_hot = np.zeros(shape = (1,3))
+one_hot[:,target_class] = 1
+
+
+print(-math.log(softmax_output*one_hot))
+
