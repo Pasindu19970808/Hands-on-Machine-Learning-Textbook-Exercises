@@ -13,7 +13,7 @@ import pandas as pd
 # %%
 #the spam and valid emails are stored in 2 folders called "easy_ham" and "spam"
 #we want to read all the files in these 2 folders and pu the filenames into a list of spam and not spam
-ham_filenames = [filename for filename in sorted(os.listdir(os.path.join(os.getcwd(),"easy_ham"))) if len(filename) > 20]
+ham_filenames = [filename for filename in sorted(os.listdir(os.path.join(os.getcwd(), "easy_ham"))) if len(filename) > 20]
 spam_filenames = [filename for filename in sorted(os.listdir(os.path.join(os.getcwd(),"spam"))) if len(filename) > 20]
 
 
@@ -189,7 +189,7 @@ html_check
 def email_to_text(email):
     html = None
     for sub_email in email.walk():
-        content_type = email.get_content_type()
+        content_type = sub_email.get_content_type()
         if content_type not in ('text/html','text/plain'):
             continue
         try:
@@ -202,6 +202,7 @@ def email_to_text(email):
             html = content
     if html:
         return html_to_text(html)
+email_to_text(X_train[41])
 
 
 # %%
@@ -333,6 +334,16 @@ html_to_text(X_train[html_idx[0]].get_content()).strip()
 
 
 # %%
-
+docs = [["hello", "world", "hello"], ["goodbye", "cruel", "world"]]
+indptr = [0]
+indices = []
+data = []
+vocabulary = {}
+for d in docs:
+    for term in d:
+        index = vocabulary.setdefault(term, len(vocabulary))
+        indices.append(index)
+        data.append(1)
+    indptr.append(len(indices))
 
 
