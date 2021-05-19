@@ -1,0 +1,8 @@
+0,multipart/mixed
+0,text/plain
+0,MULTIPART,text/plain
+0,wrote to textlist,text/plain,0,j:2
+0,application/ms-tnef
+0,text/plain
+0,MULTIPART,text/plain
+0,wrote to textlist,text/plain,1,j:4
