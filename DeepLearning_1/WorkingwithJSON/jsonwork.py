@@ -37,4 +37,17 @@ null : None
 
 data = json.loads(people_string)
 
-print(data)
+#for  person in data["people"]:
+#    print(person)
+
+#converting from python object to json string 
+
+for person in data["people"]:
+    del person["phone"]
+
+new_string = json.dumps(data, indent = 2)
+
+print(new_string)
+
+
+#How to load kson files to python objects
