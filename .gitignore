@@ -6148,3 +6148,7 @@ DeepLearning_1/.vscode/settings.json
 DeepLearning_1/WorkingwithJSON/CNN.ipynb
 DeepLearning_1/SpamClassifier/20021010_easy_ham.tar.bz2
 DeepLearning_1/SpamClassifier/20021010_spam.tar.bz2
+DeepLearning_1/Celeb_A/model_dnn.h5
+.gitignore
+DeepLearning_1/Celeb_A/resnet50.h5
+DeepLearning_1/Celeb_A/resnet50_28.h5
